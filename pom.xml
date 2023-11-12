@@ -6,58 +6,75 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.1.4</version>
-    <relativePath/> <!-- lookup parent from repository -->
+    <version>3.1.5</version>
+    <relativePath/>
   </parent>
   <groupId>com.example</groupId>
   <artifactId>TeamvoyTest</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>TeamvoyTest</name>
   <description>TeamvoyTest</description>
+
   <properties>
-    <java.version>11</java.version>
+    <java.version>17</java.version>
   </properties>
+
   <dependencies>
+    <!-- Spring Boot Starters -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
 
-    <!-- Spring Web -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
-
-
-    <!-- PostgreSQL -->
+    <!-- Database Dependencies -->
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <version>42.5.4</version>
     </dependency>
 
-    <!-- Spring Data JPA -->
+    <!-- Flyway Migration Tool -->
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-data-jpa</artifactId>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-core</artifactId>
+      <version>9.21.0</version>
     </dependency>
 
-    <!-- Lombok -->
+    <!-- Code Generation and Simplification Tools -->
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <version>1.18.30</version>
       <scope>provided</scope>
     </dependency>
-
-
+    <dependency>
+      <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct</artifactId>
+      <version>1.5.5.Final</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct-processor</artifactId>
+      <version>1.5.5.Final</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -68,5 +85,4 @@
       </plugin>
     </plugins>
   </build>
-
 </project>

@@ -1,6 +1,6 @@
-package com.example.teamvoytest.api.dto.order;
+package com.example.teamvoytest.api.dto.product;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -10,10 +10,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateOrderRequest {
+public class InsertProductsRequest {
 
-  @NotNull(message = "Products list cannot be null")
+  @Valid
   @Size(min = 1, message = "Products list cannot be empty")
-  private List<ProductForOrderRequest> products;
-
+  private List<ProductDto> products;
 }

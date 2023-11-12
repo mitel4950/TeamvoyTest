@@ -1,7 +1,9 @@
 package com.example.teamvoytest.api.dto.product;
 
 
-import java.util.List;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,6 +13,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RemoveProductRequest {
 
-  private List<Long> productIds;
+  @NotNull(message = "Products list cannot be null")
+  @Size(min = 1, message = "Products list cannot be empty")
+  private Set<Long> productIds;
 
 }

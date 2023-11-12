@@ -2,14 +2,14 @@ package com.example.teamvoytest.api.service;
 
 import com.example.teamvoytest.api.dto.order.CreateOrderRequest;
 import com.example.teamvoytest.api.dto.order.OrderResponse;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 public interface OrderService {
 
-  List<OrderResponse> listOrders();
+  Page<OrderResponse> listOrders(boolean includeProducts, PageRequest pageable);
 
-  OrderResponse getOrderById(long orderId);
-
+  OrderResponse getOrderById(long orderId, boolean includeProduct);
 
   OrderResponse createOrder(CreateOrderRequest order);
 
