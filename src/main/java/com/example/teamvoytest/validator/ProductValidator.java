@@ -53,7 +53,7 @@ public class ProductValidator {
     }
   }
 
-  public void validateProductsExistence(List<Product> existing, Set<Long> requestedIds) {
+  public static void validateProductsExistence(List<Product> existing, Set<Long> requestedIds) {
     if (requestedIds.size() != existing.size()) {
       List<Long> existIds = existing.stream().map(Product::getId).toList();
       String notExistingIds = requestedIds.stream()

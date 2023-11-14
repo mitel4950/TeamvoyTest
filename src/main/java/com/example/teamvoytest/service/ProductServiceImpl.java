@@ -29,7 +29,6 @@ public class ProductServiceImpl implements ProductService {
   private final ProductRepository repository;
   private final ProductMapper mapper;
   private final ProductByOrderService productByOrderService;
-  private final ProductValidator productValidator;
 
   @Override
   public List<ProductDto> listProducts(boolean showBookedCount) {
@@ -68,7 +67,7 @@ public class ProductServiceImpl implements ProductService {
   @Override
   public List<Product> getEntitiesByIds(Set<Long> productIds) {
     List<Product> allById = repository.findAllById(productIds);
-    productValidator.validateProductsExistence(allById, productIds);
+    ProductValidator.validateProductsExistence(allById, productIds);
     return allById;
   }
 
