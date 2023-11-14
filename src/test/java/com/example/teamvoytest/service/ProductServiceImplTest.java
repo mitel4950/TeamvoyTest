@@ -3,8 +3,10 @@ package com.example.teamvoytest.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -19,6 +21,7 @@ import com.example.teamvoytest.domain.model.ProductByOrder;
 import com.example.teamvoytest.domain.model.composite_key.ProductByOrderId;
 import com.example.teamvoytest.domain.repository.ProductRepository;
 import com.example.teamvoytest.exception.RecordNotFoundException;
+import com.example.teamvoytest.validator.ProductValidator;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -40,6 +43,8 @@ class ProductServiceImplTest {
   private ProductMapper mapper;
   @Mock
   private ProductByOrderService productByOrderService;
+  @Mock
+  private ProductValidator productValidator;
   @InjectMocks
   private ProductServiceImpl productService;
 
@@ -96,6 +101,7 @@ class ProductServiceImplTest {
         new Product(2L, "Product 2", 200, 20, ProductStatus.AVAILABLE)
     );
     when(repository.findAllById(productIds)).thenReturn(products);
+    doNothing().when(productValidator).validateProductsExistence(any(), any());
     productService.unavailableProducts(new RemoveProductRequest(productIds));
     verify(repository).saveAll(
         argThat(ps -> ((List<Product>) ps).stream()
@@ -110,6 +116,7 @@ class ProductServiceImplTest {
     Product product2 = new Product(2L, "Product 2", 200, 20, ProductStatus.AVAILABLE);
     List<Product> productList = List.of(product1, product2);
     when(repository.findAllById(anySet())).thenReturn(productList);
+    doNothing().when(productValidator).validateProductsExistence(any(), any());
     Map<Long, Product> result = productService.getEntityMapByProductByOrders(List.of(pbo1, pbo2));
     verify(repository).findAllById(new HashSet<>(Set.of(1L, 2L)));
     assertEquals(2, result.size());

@@ -11,7 +11,7 @@ public interface OrderService {
 
   OrderResponse getOrderById(long orderId, boolean includeProduct);
 
-  OrderResponse createOrder(CreateOrderRequest order);
+  OrderResponse createOrderWithProductSync(CreateOrderRequest order);
 
   void cancelOrder(long orderId);
 

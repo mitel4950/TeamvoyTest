@@ -36,9 +36,11 @@ public class OrderServiceImpl implements OrderService {
 
   private final OrderRepository repository;
   private final OrderMapper mapper;
+  private final OrderValidator validator;
   private final ProductMapper productMapper;
   private final ProductService productService;
   private final ProductByOrderService productByOrderService;
+  private final ProductLockService productLockService;
 
   @Value("${custom.order-activity-time-milliseconds}")
   private Long orderActivityTimeMilliseconds;
@@ -64,15 +66,16 @@ public class OrderServiceImpl implements OrderService {
   }
 
   @Override
-  public OrderResponse createOrder(CreateOrderRequest orderRequest) {
-    Order newOrder = new Order(OrderStatus.AWAITING);
-    Order createdOrder = repository.save(newOrder);
-
-    List<ProductForOrderRequest> products = fillRequestsWithCost(orderRequest.getProducts());
-    productByOrderService.saveAll(products, createdOrder.getId());
-
-    OrderResponse orderResponse = mapper.toResponse(createdOrder);
-    return fillOrderWithProducts(orderResponse);
+  public OrderResponse createOrderWithProductSync(CreateOrderRequest orderRequest) {
+    Set<Long> productIds = orderRequest.getProducts().stream()
+        .map(ProductForOrderRequest::getProductId)
+        .collect(Collectors.toSet());
+    try {
+      productLockService.lockProductIds(productIds);
+      return createOrder(orderRequest);
+    } finally {
+      productLockService.unlockProductIds(productIds);
+    }
   }
 
   @Override
@@ -95,6 +98,17 @@ public class OrderServiceImpl implements OrderService {
     repository.save(order);
   }
 
+  private OrderResponse createOrder(CreateOrderRequest orderRequest) {
+    validator.validateCreateOrderRequest(orderRequest);
+    Order newOrder = new Order(OrderStatus.AWAITING);
+    Order createdOrder = repository.save(newOrder);
+
+    List<ProductForOrderRequest> products = fillRequestsWithCost(orderRequest.getProducts());
+    productByOrderService.saveAll(products, createdOrder.getId());
+
+    OrderResponse orderResponse = mapper.toResponse(createdOrder);
+    return fillOrderWithProducts(orderResponse);
+  }
 
   private Order getEntityById(long orderId) {
     return repository.findById(orderId)

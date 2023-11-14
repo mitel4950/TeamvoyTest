@@ -23,7 +23,6 @@ import lombok.NoArgsConstructor;
 @Table(name = "order")
 public class Order {
 
-  // todo: add logging like profiler
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", nullable = false)

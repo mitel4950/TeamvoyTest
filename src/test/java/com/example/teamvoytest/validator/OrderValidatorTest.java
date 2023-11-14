@@ -1,6 +1,8 @@
 package com.example.teamvoytest.validator;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import com.example.teamvoytest.api.dto.order.CreateOrderRequest;
@@ -34,6 +36,8 @@ class OrderValidatorTest {
   private ProductService productService;
   @Mock
   private ProductByOrderService productByOrderService;
+  @Mock
+  private ProductValidator productValidator;
   @InjectMocks
   private OrderValidator orderValidator;
 
@@ -69,7 +73,7 @@ class OrderValidatorTest {
     product1.setInventoryCount(0);
 
     when(productService.getEntitiesByIds(Set.of(1L))).thenReturn(List.of(product1));
-
+    doNothing().when(productValidator).validateProductExistence(any());
     assertThrows(ProductStatusException.class,
                  () -> orderValidator.validateCreateOrderRequest(request));
   }

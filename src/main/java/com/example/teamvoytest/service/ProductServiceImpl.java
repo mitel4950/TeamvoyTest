@@ -83,7 +83,6 @@ public class ProductServiceImpl implements ProductService {
 
   @Override
   public void minusProductInventoryCount(Long orderId) {
-    // todo: add thread synchronization
     List<ProductByOrder> pboList = productByOrderService.listEntitiesByOrderId(orderId);
 
     Set<Long> productIds =

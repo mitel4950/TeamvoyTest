@@ -4,7 +4,6 @@ import com.example.teamvoytest.api.controller.OrderApi;
 import com.example.teamvoytest.api.dto.order.CreateOrderRequest;
 import com.example.teamvoytest.api.dto.order.OrderResponse;
 import com.example.teamvoytest.api.service.OrderService;
-import com.example.teamvoytest.validator.OrderValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderController implements OrderApi {
 
   private final OrderService service;
-  private final OrderValidator validator;
 
   @Override
   public Page<OrderResponse> listOrders(boolean includeProducts, int pageNumber, int pageSize) {
@@ -29,8 +27,7 @@ public class OrderController implements OrderApi {
 
   @Override
   public OrderResponse createOrder(CreateOrderRequest order) {
-    validator.validateCreateOrderRequest(order);
-    return service.createOrder(order);
+    return service.createOrderWithProductSync(order);
   }
 
   @Override

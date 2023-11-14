@@ -2,6 +2,8 @@ package com.example.teamvoytest.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -9,21 +11,25 @@ import static org.mockito.Mockito.when;
 import com.example.teamvoytest.api.dto.order.CreateOrderRequest;
 import com.example.teamvoytest.api.dto.order.OrderResponse;
 import com.example.teamvoytest.api.dto.order.OrderStatus;
+import com.example.teamvoytest.api.dto.order.ProductForOrderDto;
 import com.example.teamvoytest.api.dto.order.ProductForOrderRequest;
 import com.example.teamvoytest.api.dto.product.ProductStatus;
 import com.example.teamvoytest.api.service.ProductByOrderService;
 import com.example.teamvoytest.api.service.ProductService;
 import com.example.teamvoytest.domain.mapper.OrderMapper;
+import com.example.teamvoytest.domain.mapper.ProductMapper;
 import com.example.teamvoytest.domain.model.Order;
 import com.example.teamvoytest.domain.model.Product;
 import com.example.teamvoytest.domain.model.ProductByOrder;
 import com.example.teamvoytest.domain.model.composite_key.ProductByOrderId;
 import com.example.teamvoytest.domain.repository.OrderRepository;
+import com.example.teamvoytest.validator.OrderValidator;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,9 +51,15 @@ class OrderServiceImplTest {
   @Mock
   private OrderMapper mapper;
   @Mock
+  private ProductMapper productMapper;
+  @Mock
   private ProductService productService;
   @Mock
+  private ProductLockService productLockService;
+  @Mock
   private ProductByOrderService productByOrderService;
+  @Mock
+  private OrderValidator validator;
 
   @InjectMocks
   private OrderServiceImpl orderService;
@@ -84,14 +96,25 @@ class OrderServiceImplTest {
     orderResponses.get(1).setId(2L);
     List<ProductByOrder> productByOrders = List.of(pbo1, pbo2);
 
+    Product product = new Product(1L, "Product Name", 1000, 5, ProductStatus.AVAILABLE);
+    Map<Long, Product> productMap = Map.of(1L, product);
+
     when(repository.findAll(pageable)).thenReturn(page);
     when(mapper.toResponseList(page)).thenReturn(orderResponses);
     when(productByOrderService.listEntitiesByOrderIds(Set.of(1L, 2L))).thenReturn(productByOrders);
+    when(productService.getEntityMapByProductByOrders(productByOrders)).thenReturn(productMap);
+
+    when(productMapper.toProductForOrderDto(eq(product), anyInt()))
+        .thenAnswer(invocation -> new ProductForOrderDto(1L, "Product Name", 1000,
+                                                         invocation.getArgument(1),
+                                                         ProductStatus.AVAILABLE));
 
     Page<OrderResponse> result = orderService.listOrders(true, pageable);
 
     assertEquals(orderResponses, result.getContent());
     assertEquals(2, result.getTotalElements());
+
+    assertEquals(40, result.getContent().get(0).getProducts().get(0).getCount());
   }
 
   @Test
@@ -109,7 +132,7 @@ class OrderServiceImplTest {
   }
 
   @Test
-  void createOrder_ShouldCreateAndReturnOrder() {
+  void createOrderWithProductSync_ShouldCreateAndReturnOrder() {
     CreateOrderRequest orderRequest = new CreateOrderRequest(List.of(pfor1, pfor2));
     Order createdOrder = new Order();
     OrderResponse orderResponse = new OrderResponse();
@@ -119,11 +142,14 @@ class OrderServiceImplTest {
     products.add(product1);
     productIds.add(1L);
 
+    doNothing().when(productLockService).lockProductIds(any());
     when(repository.save(any(Order.class))).thenReturn(createdOrder);
     when(mapper.toResponse(createdOrder)).thenReturn(orderResponse);
     when(productService.getEntitiesByIds(productIds)).thenReturn(products);
+    doNothing().when(productLockService).unlockProductIds(any());
+    doNothing().when(validator).validateCreateOrderRequest(any());
 
-    OrderResponse result = orderService.createOrder(orderRequest);
+    OrderResponse result = orderService.createOrderWithProductSync(orderRequest);
 
     assertEquals(orderResponse, result);
   }
