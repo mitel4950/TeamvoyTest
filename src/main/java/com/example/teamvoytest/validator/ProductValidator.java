@@ -28,7 +28,7 @@ public class ProductValidator {
     List<Long> ids = insertProductsRequest.getProducts().stream()
         .map(ProductDto::getId)
         .filter(Objects::nonNull)
-        .toList();
+        .collect(Collectors.toList());
 
     validateUniqueIds(ids);
     validateProductExistence(ids);
@@ -42,26 +42,26 @@ public class ProductValidator {
   public void validateProductExistence(List<Long> productIdsInRequest,
                                        List<Product> existProducts) {
     if (existProducts.size() != productIdsInRequest.size()) {
-      List<Long> foundIds = existProducts.stream().map(Product::getId).toList();
+      List<Long> foundIds = existProducts.stream().map(Product::getId).collect(Collectors.toList());
 
       String missingIdsString = productIdsInRequest.stream()
           .filter(id -> !foundIds.contains(id))
           .map(String::valueOf)
           .collect(Collectors.joining(", "));
 
-      throw new InvalidDataException(PRODUCT_IDS_ARE_NOT_FOUND.formatted(missingIdsString));
+      throw new InvalidDataException(String.format(PRODUCT_IDS_ARE_NOT_FOUND, missingIdsString));
     }
   }
 
   public static void validateProductsExistence(List<Product> existing, Set<Long> requestedIds) {
     if (requestedIds.size() != existing.size()) {
-      List<Long> existIds = existing.stream().map(Product::getId).toList();
+      List<Long> existIds = existing.stream().map(Product::getId).collect(Collectors.toList());
       String notExistingIds = requestedIds.stream()
           .filter(existIds::contains)
           .map(String::valueOf)
           .collect(Collectors.joining(", "));
 
-      throw new RecordNotFoundException(PRODUCTS_NOT_FOUND.formatted(notExistingIds));
+      throw new RecordNotFoundException(String.format(PRODUCTS_NOT_FOUND, notExistingIds));
     }
   }
 }

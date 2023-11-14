@@ -99,7 +99,8 @@ public class ProductServiceImpl implements ProductService {
 
   private Product getEntityById(Long productId) {
     return repository.findById(productId)
-        .orElseThrow(() -> new RecordNotFoundException(PRODUCT_NOT_FOUND.formatted(productId)));
+        .orElseThrow(
+            () -> new RecordNotFoundException(String.format(PRODUCT_NOT_FOUND, productId)));
   }
 
   private List<ProductDto> fillProductBookedCountValues(List<ProductDto> products) {

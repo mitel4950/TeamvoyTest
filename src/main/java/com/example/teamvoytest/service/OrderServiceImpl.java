@@ -112,7 +112,7 @@ public class OrderServiceImpl implements OrderService {
 
   private Order getEntityById(long orderId) {
     return repository.findById(orderId)
-        .orElseThrow(() -> new RecordNotFoundException(ORDER_NOT_FOUND.formatted(orderId)));
+        .orElseThrow(() -> new RecordNotFoundException(String.format(ORDER_NOT_FOUND, orderId)));
   }
 
   private OrderResponse fillOrderWithProducts(OrderResponse orderResponse) {
@@ -122,7 +122,7 @@ public class OrderServiceImpl implements OrderService {
 
     List<ProductForOrderDto> productsForOrderDto = pboList.stream()
         .map(pbo -> mapToProductForOrderDto(productsByIds, pbo))
-        .toList();
+        .collect(Collectors.toList());
 
     orderResponse.setProducts(productsForOrderDto);
     return orderResponse;
@@ -167,7 +167,7 @@ public class OrderServiceImpl implements OrderService {
 
     return pboList.stream()
         .map(request -> updateProductForOrderRequestWithCost(productsByIds, request))
-        .toList();
+        .collect(Collectors.toList());
   }
 
   private ProductForOrderRequest updateProductForOrderRequestWithCost(Map<Long, Product> productsById,

@@ -22,7 +22,8 @@ public class CommonValidationUtils {
           .distinct()
           .map(String::valueOf)
           .collect(Collectors.joining(", "));
-      throw new InvalidDataException(DATA_CONTAINS_DUPLICATE_IDS.formatted(repeatingIdsString));
+      throw new InvalidDataException(
+          String.format(DATA_CONTAINS_DUPLICATE_IDS, repeatingIdsString));
     }
   }
 

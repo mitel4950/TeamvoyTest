@@ -3,6 +3,7 @@ package com.example.teamvoytest.exception.handler;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,7 @@ public class GlobalExceptionHandler {
         .getFieldErrors()
         .stream()
         .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
-        .toList();
+        .collect(Collectors.toList());
 
     body.put("messages", errors);
     return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);

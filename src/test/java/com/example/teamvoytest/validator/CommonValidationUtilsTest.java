@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.example.teamvoytest.exception.InvalidDataException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +20,7 @@ class CommonValidationUtilsTest {
 
   @Test
   void validateUniqueIds_WithDuplicates_ShouldThrowException() {
-    List<Long> ids = Stream.of(1L, 2L, 2L, 3L).toList();
+    List<Long> ids = Stream.of(1L, 2L, 2L, 3L).collect(Collectors.toList());
     assertThrows(InvalidDataException.class, () -> CommonValidationUtils.validateUniqueIds(ids));
   }
 }

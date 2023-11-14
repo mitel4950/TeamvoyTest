@@ -40,7 +40,7 @@ public class OrderValidator {
   public void validateCreateOrderRequest(CreateOrderRequest createOrdersRequest) {
     List<Long> productIds = createOrdersRequest.getProducts().stream()
         .map(ProductForOrderRequest::getProductId)
-        .toList();
+        .collect(Collectors.toList());
 
     validateUniqueIds(productIds);
 
@@ -57,14 +57,15 @@ public class OrderValidator {
   private static void validateProductsStatuses(List<Product> products) {
     List<Product> unavailableStatusProducts = products.stream()
         .filter(p -> p.getStatus() != ProductStatus.AVAILABLE || p.getInventoryCount() <= 0)
-        .toList();
+        .collect(Collectors.toList());
 
     if (!unavailableStatusProducts.isEmpty()) {
       String productIdsInString = unavailableStatusProducts.stream()
           .map(Product::getId)
           .map(String::valueOf)
           .collect(Collectors.joining(", "));
-      throw new ProductStatusException(PRODUCTS_ARE_NOT_AVAILABLE.formatted(productIdsInString));
+      throw new ProductStatusException(
+          String.format(PRODUCTS_ARE_NOT_AVAILABLE, productIdsInString));
     }
 
 
@@ -88,13 +89,13 @@ public class OrderValidator {
 
     if (!productIdsInString.isEmpty()) {
       throw new InabilityToLinkOrderException(
-          INSUFFICIENT_AMOUNT_OF_PRODUCTS.formatted(productIdsInString));
+          String.format(INSUFFICIENT_AMOUNT_OF_PRODUCTS, productIdsInString));
     }
   }
 
   public static void validateOrderStatusToCancel(Order order) {
     if (order.getStatus() == OrderStatus.COMPLETED) {
-      throw new OrderStatusException(ORDER_IS_COMPLETED.formatted(order.getId()));
+      throw new OrderStatusException(String.format(ORDER_IS_COMPLETED, order.getId()));
     }
   }
 
@@ -103,7 +104,7 @@ public class OrderValidator {
         order.getCreatedAt().plus(Duration.ofMillis(orderActivityTimeMilliseconds));
 
     if (order.getStatus() != OrderStatus.AWAITING || OffsetDateTime.now().isAfter(expirationTime)) {
-      throw new OrderStatusException(ORDER_IS_FAILED.formatted(order.getId()));
+      throw new OrderStatusException(String.format(ORDER_IS_FAILED, order.getId()));
     }
   }
 }
