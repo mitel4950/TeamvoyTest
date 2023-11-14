@@ -1,6 +1,7 @@
 package com.example.teamvoytest.validator;
 
-import com.example.teamvoytest.exception.ErrorMessages;
+import static com.example.teamvoytest.exception.ErrorMessages.DATA_CONTAINS_DUPLICATE_IDS;
+
 import com.example.teamvoytest.exception.InvalidDataException;
 import java.util.HashSet;
 import java.util.List;
@@ -16,13 +17,12 @@ public class CommonValidationUtils {
   public static void validateUniqueIds(List<Long> ids){
     Set<Long> uniqueIds = new HashSet<>(ids);
     if (uniqueIds.size() != ids.size()) {
-      ids.removeAll(uniqueIds);
       String repeatingIdsString = ids.stream()
+          .filter(ids::contains)
           .distinct()
           .map(String::valueOf)
           .collect(Collectors.joining(", "));
-      throw new InvalidDataException(
-          ErrorMessages.DATA_CONTAINS_DUPLICATE_IDS.formatted(repeatingIdsString));
+      throw new InvalidDataException(DATA_CONTAINS_DUPLICATE_IDS.formatted(repeatingIdsString));
     }
   }
 

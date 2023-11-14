@@ -1,5 +1,9 @@
 package com.example.teamvoytest.validator;
 
+import static com.example.teamvoytest.exception.ErrorMessages.INSUFFICIENT_AMOUNT_OF_PRODUCTS;
+import static com.example.teamvoytest.exception.ErrorMessages.ORDER_IS_COMPLETED;
+import static com.example.teamvoytest.exception.ErrorMessages.ORDER_IS_FAILED;
+import static com.example.teamvoytest.exception.ErrorMessages.PRODUCTS_ARE_NOT_AVAILABLE;
 import static com.example.teamvoytest.validator.CommonValidationUtils.validateUniqueIds;
 
 import com.example.teamvoytest.api.dto.order.CreateOrderRequest;
@@ -11,7 +15,6 @@ import com.example.teamvoytest.api.service.ProductService;
 import com.example.teamvoytest.domain.model.Order;
 import com.example.teamvoytest.domain.model.Product;
 import com.example.teamvoytest.domain.model.ProductByOrder;
-import com.example.teamvoytest.exception.ErrorMessages;
 import com.example.teamvoytest.exception.InabilityToLinkOrderException;
 import com.example.teamvoytest.exception.OrderStatusException;
 import com.example.teamvoytest.exception.ProductStatusException;
@@ -61,8 +64,7 @@ public class OrderValidator {
           .map(Product::getId)
           .map(String::valueOf)
           .collect(Collectors.joining(", "));
-      throw new ProductStatusException(
-          ErrorMessages.PRODUCTS_ARE_NOT_AVAILABLE.formatted(productIdsInString));
+      throw new ProductStatusException(PRODUCTS_ARE_NOT_AVAILABLE.formatted(productIdsInString));
     }
 
 
@@ -86,13 +88,13 @@ public class OrderValidator {
 
     if (!productIdsInString.isEmpty()) {
       throw new InabilityToLinkOrderException(
-          ErrorMessages.INSUFFICIENT_AMOUNT_OF_PRODUCTS.formatted(productIdsInString));
+          INSUFFICIENT_AMOUNT_OF_PRODUCTS.formatted(productIdsInString));
     }
   }
 
   public static void validateOrderStatusToCancel(Order order) {
     if (order.getStatus() == OrderStatus.COMPLETED) {
-      throw new OrderStatusException(ErrorMessages.ORDER_IS_COMPLETED.formatted(order.getId()));
+      throw new OrderStatusException(ORDER_IS_COMPLETED.formatted(order.getId()));
     }
   }
 
@@ -101,7 +103,7 @@ public class OrderValidator {
         order.getCreatedAt().plus(Duration.ofMillis(orderActivityTimeMilliseconds));
 
     if (order.getStatus() != OrderStatus.AWAITING || OffsetDateTime.now().isAfter(expirationTime)) {
-      throw new OrderStatusException(ErrorMessages.ORDER_IS_FAILED.formatted(order.getId()));
+      throw new OrderStatusException(ORDER_IS_FAILED.formatted(order.getId()));
     }
   }
 }

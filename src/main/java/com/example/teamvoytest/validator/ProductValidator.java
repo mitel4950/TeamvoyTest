@@ -1,12 +1,13 @@
 package com.example.teamvoytest.validator;
 
+import static com.example.teamvoytest.exception.ErrorMessages.PRODUCTS_NOT_FOUND;
+import static com.example.teamvoytest.exception.ErrorMessages.PRODUCT_IDS_ARE_NOT_FOUND;
 import static com.example.teamvoytest.validator.CommonValidationUtils.validateUniqueIds;
 
 import com.example.teamvoytest.api.dto.product.InsertProductsRequest;
 import com.example.teamvoytest.api.dto.product.ProductDto;
 import com.example.teamvoytest.api.service.ProductService;
 import com.example.teamvoytest.domain.model.Product;
-import com.example.teamvoytest.exception.ErrorMessages;
 import com.example.teamvoytest.exception.InvalidDataException;
 import com.example.teamvoytest.exception.RecordNotFoundException;
 import java.util.HashSet;
@@ -48,8 +49,7 @@ public class ProductValidator {
           .map(String::valueOf)
           .collect(Collectors.joining(", "));
 
-      throw new InvalidDataException(
-          ErrorMessages.PRODUCT_IDS_ARE_NOT_FOUND.formatted(missingIdsString));
+      throw new InvalidDataException(PRODUCT_IDS_ARE_NOT_FOUND.formatted(missingIdsString));
     }
   }
 
@@ -61,7 +61,7 @@ public class ProductValidator {
           .map(String::valueOf)
           .collect(Collectors.joining(", "));
 
-      throw new RecordNotFoundException(ErrorMessages.PRODUCTS_NOT_FOUND.formatted(notExistingIds));
+      throw new RecordNotFoundException(PRODUCTS_NOT_FOUND.formatted(notExistingIds));
     }
   }
 }

@@ -1,5 +1,7 @@
 package com.example.teamvoytest.service;
 
+import static com.example.teamvoytest.exception.ErrorMessages.PRODUCT_NOT_FOUND;
+
 import com.example.teamvoytest.api.dto.product.InsertProductsRequest;
 import com.example.teamvoytest.api.dto.product.ProductDto;
 import com.example.teamvoytest.api.dto.product.ProductStatus;
@@ -10,11 +12,11 @@ import com.example.teamvoytest.domain.mapper.ProductMapper;
 import com.example.teamvoytest.domain.model.Product;
 import com.example.teamvoytest.domain.model.ProductByOrder;
 import com.example.teamvoytest.domain.repository.ProductRepository;
-import com.example.teamvoytest.exception.ErrorMessages;
 import com.example.teamvoytest.exception.RecordNotFoundException;
 import com.example.teamvoytest.validator.ProductValidator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -98,12 +100,16 @@ public class ProductServiceImpl implements ProductService {
   }
 
   private Product getEntityById(Long productId) {
-    return repository.findById(productId).orElseThrow(
-        () -> new RecordNotFoundException(ErrorMessages.PRODUCT_NOT_FOUND.formatted(productId)));
+    return repository.findById(productId)
+        .orElseThrow(() -> new RecordNotFoundException(PRODUCT_NOT_FOUND.formatted(productId)));
   }
 
   private List<ProductDto> fillProductBookedCountValues(List<ProductDto> products) {
-    Set<Long> productIds = products.stream().map(ProductDto::getId).collect(Collectors.toSet());
+    Set<Long> productIds = products.stream()
+        .map(ProductDto::getId)
+        .filter(Objects::nonNull)
+        .collect(Collectors.toSet());
+
     List<ProductByOrder> activeProductByOrders =
         productByOrderService.listActiveEntitiesByProductIds(productIds);
 

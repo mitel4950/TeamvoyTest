@@ -1,5 +1,7 @@
 package com.example.teamvoytest.service;
 
+import static com.example.teamvoytest.exception.ErrorMessages.ORDER_NOT_FOUND;
+
 import com.example.teamvoytest.api.dto.order.CreateOrderRequest;
 import com.example.teamvoytest.api.dto.order.OrderResponse;
 import com.example.teamvoytest.api.dto.order.OrderStatus;
@@ -14,7 +16,6 @@ import com.example.teamvoytest.domain.model.Order;
 import com.example.teamvoytest.domain.model.Product;
 import com.example.teamvoytest.domain.model.ProductByOrder;
 import com.example.teamvoytest.domain.repository.OrderRepository;
-import com.example.teamvoytest.exception.ErrorMessages;
 import com.example.teamvoytest.exception.RecordNotFoundException;
 import com.example.teamvoytest.validator.OrderValidator;
 import java.util.ArrayList;
@@ -97,8 +98,7 @@ public class OrderServiceImpl implements OrderService {
 
   private Order getEntityById(long orderId) {
     return repository.findById(orderId)
-        .orElseThrow(() -> new RecordNotFoundException(
-            ErrorMessages.ORDER_NOT_FOUND.formatted(orderId)));
+        .orElseThrow(() -> new RecordNotFoundException(ORDER_NOT_FOUND.formatted(orderId)));
   }
 
   private OrderResponse fillOrderWithProducts(OrderResponse orderResponse) {
