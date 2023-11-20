@@ -3,6 +3,7 @@ package com.example.teamvoytest.api.controller;
 import com.example.teamvoytest.api.dto.order.CreateOrderRequest;
 import com.example.teamvoytest.api.dto.order.OrderResponse;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -21,22 +22,22 @@ public interface OrderApi {
 
   @GetMapping
   Page<OrderResponse> listOrders(
-      @RequestParam(required = false) boolean includeProducts,
+      @RequestParam(defaultValue = "false") boolean includeProducts,
       @RequestParam(defaultValue = "0") int pageNumber,
       @RequestParam(defaultValue = "10") int pageSize
   );
 
   @GetMapping("/{orderId}")
   OrderResponse getOrderById(
-      @PathVariable("orderId") long orderId,
-      @RequestParam(required = false) boolean includeProduct);
+      @NotNull @PathVariable("orderId") long orderId,
+      @RequestParam(defaultValue = "false") boolean includeProduct);
 
   @PostMapping
-  OrderResponse createOrder(@Valid @RequestBody CreateOrderRequest order);
+  OrderResponse createOrder(@NotNull @Valid @RequestBody CreateOrderRequest order);
 
   @DeleteMapping("/{orderId}")
-  void cancelOrder(@PathVariable("orderId") long orderId);
+  void cancelOrder(@NotNull @PathVariable("orderId") long orderId);
 
   @PutMapping("/{orderId}/confirm-payment")
-  void confirmPayment(@PathVariable("orderId") long orderId);
+  void confirmPayment(@NotNull @PathVariable("orderId") long orderId);
 }

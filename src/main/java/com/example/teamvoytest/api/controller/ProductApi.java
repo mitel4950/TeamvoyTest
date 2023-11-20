@@ -6,6 +6,7 @@ import com.example.teamvoytest.api.dto.product.ProductDto;
 import com.example.teamvoytest.api.dto.product.RemoveProductRequest;
 import java.util.List;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,19 +21,19 @@ public interface ProductApi {
 
   @GetMapping
   List<ProductDto> listProducts(
-      @RequestParam(required = false) boolean showBookedCount
+      @NotNull @RequestParam(defaultValue = "false") boolean showBookedCount
   );
 
   @GetMapping("/{productId}")
-  ProductDto getProductById(@PathVariable("productId") long productId);
+  ProductDto getProductById(@NotNull @PathVariable("productId") long productId);
 
   @PostMapping
-  List<ProductDto> insertProducts(@Valid @RequestBody InsertProductsRequest insertProductsRequest);
+  List<ProductDto> insertProducts(@NotNull @Valid @RequestBody InsertProductsRequest insertProductsRequest);
 
   @DeleteMapping("/{productId}")
-  void unavailableProduct(@PathVariable("productId") long productId);
+  void unavailableProduct(@NotNull @PathVariable("productId") long productId);
 
   @PostMapping("/bulk-unavailable")
-  void unavailableProducts(@Valid @RequestBody RemoveProductRequest request);
+  void unavailableProducts(@NotNull @Valid @RequestBody RemoveProductRequest request);
 
 }
