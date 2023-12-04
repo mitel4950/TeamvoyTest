@@ -10,16 +10,6 @@ spring:
     properties:
       hibernate:
         globally_quoted_identifiers: true
-        format_sql: true
-        use_sql_comments: true
-    show-sql: true
 
 custom:
   order-activity-time-milliseconds: 600000 # 10 minutes
-
-logging:
-  level:
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type: TRACE
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-
