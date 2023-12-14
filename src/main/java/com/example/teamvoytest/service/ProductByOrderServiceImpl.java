@@ -15,6 +15,7 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +28,7 @@ public class ProductByOrderServiceImpl implements ProductByOrderService {
   private final ProductByOrderMapper mapper;
 
   @Override
+  @Transactional
   public void saveAll(List<ProductForOrderRequest> products, Long orderId) {
     List<ProductByOrder> pboList = mapper.dtoListToEntityList(products, orderId);
     repository.saveAll(pboList);

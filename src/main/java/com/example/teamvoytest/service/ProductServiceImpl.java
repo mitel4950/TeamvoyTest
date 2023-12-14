@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +45,7 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
+  @Transactional
   public List<ProductDto> insertProducts(InsertProductsRequest insertProductsRequest) {
     List<Product> entities = mapper.toEntityList(insertProductsRequest.getProducts());
     List<Product> saved = repository.saveAll(entities);
@@ -51,6 +53,7 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
+  @Transactional
   public void unavailableProduct(long productId) {
     Product product = getEntityById(productId);
     product.setStatus(ProductStatus.UNAVAILABLE);
@@ -58,6 +61,7 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
+  @Transactional
   public void unavailableProducts(RemoveProductRequest request) {
     List<Product> existing = getEntitiesByIds(request.getProductIds());
     existing.forEach(product -> product.setStatus(ProductStatus.UNAVAILABLE));
@@ -81,6 +85,7 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
+  @Transactional
   public void minusProductInventoryCount(Long orderId) {
     List<ProductByOrder> pboList = productByOrderService.listEntitiesByOrderId(orderId);
 

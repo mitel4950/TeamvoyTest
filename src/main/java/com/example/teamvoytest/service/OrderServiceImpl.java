@@ -29,6 +29,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +47,7 @@ public class OrderServiceImpl implements OrderService {
   private Long orderActivityTimeMilliseconds;
 
   @Override
+  @Transactional(readOnly = true)
   public Page<OrderResponse> listOrders(boolean includeProducts, PageRequest pageable) {
     Page<Order> allOrders = repository.findAll(pageable);
     List<OrderResponse> orderResponses = mapper.toResponseList(allOrders);
@@ -58,6 +60,7 @@ public class OrderServiceImpl implements OrderService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public OrderResponse getOrderById(long orderId, boolean includeProduct) {
     Order order = getEntityById(orderId);
     OrderResponse orderResponse = mapper.toResponse(order);
@@ -66,6 +69,7 @@ public class OrderServiceImpl implements OrderService {
   }
 
   @Override
+  @Transactional
   public OrderResponse createOrderWithProductSync(CreateOrderRequest orderRequest) {
     Set<Long> productIds = orderRequest.getProducts().stream()
         .map(ProductForOrderRequest::getProductId)
@@ -79,6 +83,7 @@ public class OrderServiceImpl implements OrderService {
   }
 
   @Override
+  @Transactional
   public void cancelOrder(long orderId) {
     Order order = getEntityById(orderId);
     OrderValidator.validateOrderStatusToCancel(order);
@@ -88,6 +93,7 @@ public class OrderServiceImpl implements OrderService {
   }
 
   @Override
+  @Transactional
   public void confirmPayment(long orderId) {
     Order order = getEntityById(orderId);
     OrderValidator.validateOrderStatusToAwait(order, orderActivityTimeMilliseconds);
